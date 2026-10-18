@@ -1,0 +1,54 @@
+name: Build & Release Native Linux Binary
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  build-native:
+    name: Compile GTK4 Native Desktop App
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Install GTK4 & WebKitGTK 6.0 system headers
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential pkg-config libgtk-4-dev libwebkitgtk-6.0-dev
+
+      - name: Install dependencies & build native binary
+        run: |
+          npm ci
+          npm run build:native
+
+      - name: Upload native binary artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: spiderweb-linux-x86_64
+          path: |
+            spiderweb
+            spiderweb.desktop
+            public/spider-icon.svg
+
+      - name: Publish GitHub Release on Tag Push (Enables Download Counter Badge)
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          generate_release_notes: true
+          files: |
+            spiderweb
+            spiderweb.desktop
+            public/spider-icon.svg

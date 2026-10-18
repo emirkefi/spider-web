@@ -1,0 +1,10 @@
+# Dependencies & Build Outputs
+node_modules/
+dist/
+native/bundle.h
+spiderweb
+
+# Logs & OS files
+*.log
+.DS_Store
+Thumbs.db

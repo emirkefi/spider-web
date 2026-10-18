@@ -1,0 +1,36 @@
+name: Bug Report
+description: Report a bug or unexpected behavior in SpiderWeb
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report a bug in **SpiderWeb**!
+  - type: textarea
+    id: description
+    attributes:
+      label: What happened?
+      description: A clear and concise description of the bug.
+      placeholder: Describe the issue...
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to Reproduce
+      description: How can we reproduce this behavior?
+      placeholder: |
+        1. Launch `./spiderweb`
+        2. Press `...`
+        3. See error
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Linux Distro & Compositor Version
+      description: e.g., Arch Linux, Hyprland 0.45+, WebKitGTK 6.0
+      placeholder: "Arch Linux / Hyprland"
+    validations:
+      required: true

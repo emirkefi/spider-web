@@ -1,0 +1,53 @@
+name: Track Repository Clones & Traffic
+
+on:
+  schedule:
+    - cron: '0 0 * * *' # Runs daily at midnight UTC
+  workflow_dispatch:    # Can also be triggered manually anytime from the Actions tab
+
+permissions:
+  contents: write
+
+jobs:
+  update-clone-badge:
+    name: Record Cumulative Git Clones
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Fetch GitHub Clones API & Update Badge JSON
+        env:
+          TRAFFIC_TOKEN: ${{ secrets.TRAFFIC_TOKEN || secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+        run: |
+          # Fetch 14-day clone traffic from GitHub API
+          RESPONSE=$(curl -s -H "Authorization: Bearer $TRAFFIC_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/$REPO/traffic/clones" || echo '{"count":0,"uniques":0}')
+
+          COUNT=$(echo "$RESPONSE" | jq -r '.count // 0')
+          UNIQUES=$(echo "$RESPONSE" | jq -r '.uniques // 0')
+
+          mkdir -p badge-out
+          cat > badge-out/clones.json <<EOF
+          {
+            "schemaVersion": 1,
+            "label": "GIT CLONES",
+            "message": "${COUNT} (${UNIQUES} unique)",
+            "color": "30D158"
+          }
+          EOF
+
+      - name: Publish clones.json to badges branch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git checkout --orphan badges-temp
+          git rm -rf . >/dev/null 2>&1 || true
+          mv badge-out/clones.json ./clones.json
+          rm -rf badge-out
+          git add clones.json
+          git commit -m "chore: update git clones badge counter"
+          git branch -M badges
+          git push -f origin badges

@@ -1,0 +1,20 @@
+name: Feature Request
+description: Suggest an enhancement, workflow feature, or Hyprland integration for SpiderWeb
+title: "[Feature]: "
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Productivity / Workflow Goal
+      description: What workflow problem or speed improvement does this solve?
+      placeholder: I would like to be able to...
+    validations:
+      required: true
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed Feature
+      description: Describe how you envision this working (including any keyboard shortcuts).
+    validations:
+      required: true

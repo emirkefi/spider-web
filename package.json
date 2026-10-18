@@ -1,7 +1,29 @@
 {
   "name": "spider-web",
-  "private": true,
   "version": "1.0.0",
+  "description": "High-velocity native GTK4/Wayland Kanban, Code Review pipeline, and productivity analytics desktop application for Hyprland Linux.",
+  "keywords": [
+    "hyprland",
+    "wayland",
+    "kanban",
+    "linux",
+    "gtk4",
+    "productivity",
+    "task-manager",
+    "code-review",
+    "developer-tools",
+    "workflow"
+  ],
+  "homepage": "https://github.com/emirkefi/spider-web",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/emirkefi/spider-web.git"
+  },
+  "bugs": {
+    "url": "https://github.com/emirkefi/spider-web/issues"
+  },
+  "license": "MIT",
+  "author": "emirkefi",
   "type": "module",
   "scripts": {
     "dev": "vite",
