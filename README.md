@@ -30,7 +30,7 @@
 
 ---
 
-## ✨ Key Features
+## Key Features
 
 <table>
   <tr>
@@ -39,7 +39,7 @@
       <p>Move tasks effortlessly across <strong>To Do</strong>, <strong>In Progress (Doing)</strong>, <strong>In Review (for Code)</strong>, and <strong>Done</strong> via smooth drag-and-drop or single-click stage advancement.</p>
     </td>
     <td width="50%">
-      <h3>⚡ Standalone Native Linux Binary</h3>
+      <h3>Standalone Native Linux Binary</h3>
       <p>Compiles directly into a self-contained ~390 KB <strong>GTK4 + WebKitGTK 6.0</strong> native Wayland executable (<code>./spiderweb</code>). No local server or external browser required.</p>
     </td>
   </tr>
@@ -49,17 +49,17 @@
       <p>Attach Git branch names (<code>feat/layer-shell</code>), Pull Request links (<code>PR #118</code>), priority badges, and interactive subtask checklists directly to cards.</p>
     </td>
     <td width="50%">
-      <h3>📊 Real-Time Velocity &amp; Completion Charts</h3>
+      <h3>Real-Time Velocity &amp; Completion Charts</h3>
       <p>Built-in SVG completion ring, pipeline stage distribution bar, per-project progress bars, and a <strong>Due Time Countdown Radar</strong> for approaching deadlines.</p>
     </td>
   </tr>
   <tr>
     <td width="50%">
-      <h3>🧭 Collapsible Icon-Only Dock Sidebar</h3>
+      <h3>Collapsible Icon-Only Dock Sidebar</h3>
       <p>Switch seamlessly between a full zero-scroll workspace sidebar and a compact <code>68px</code> icon-only dock using <code>[</code> or <code>Ctrl + B</code>.</p>
     </td>
     <td width="50%">
-      <h3>🌗 Frosted Glass Light &amp; Dark Modes</h3>
+      <h3>Frosted Glass Light &amp; Dark Modes</h3>
       <p>Translucent vibrancy surfaces, 1px hairline borders, high-contrast typography, and instant theme toggling with the <code>T</code> hotkey.</p>
     </td>
   </tr>
@@ -67,7 +67,7 @@
 
 ---
 
-## 🔄 Animated Workflow Pipeline
+## Animated Workflow Pipeline
 
 <div align="center">
   <img src="./public/workflow-animation.svg" alt="SpiderWeb 4-Stage Pipeline" width="100%" />
@@ -80,7 +80,7 @@
 
 ---
 
-## 🚀 Quick Installation (Native Desktop App)
+## Quick Installation (Native Desktop App)
 
 ### Prerequisites (Arch Linux / Hyprland)
 Ensure you have `gtk4`, `webkitgtk-6.0`, `gcc`, and `nodejs` installed:
@@ -112,7 +112,7 @@ spiderweb
 
 ---
 
-## 🪟 Hyprland Compositor Integration
+## Hyprland Compositor Integration
 
 Add these rules to `~/.config/hypr/hyprland.conf` to summon **SpiderWeb** instantly with `SUPER + K` or as a toggleable floating scratchpad with `SUPER + ~`:
 
@@ -133,7 +133,7 @@ windowrulev2 = rounding 16, class:^(dev.hyprland.spiderweb)$
 
 ---
 
-## ⌨️ Keyboard Shortcuts
+## Keyboard Shortcuts
 
 Press **`?`** at any time inside the application to open the interactive **Keybinds Cheat Sheet** popup.
 
@@ -154,7 +154,7 @@ Press **`?`** at any time inside the application to open the interactive **Keybi
 
 ---
 
-## 📈 Download & Clone Tracking
+## Download & Clone Tracking
 
 This repository tracks community adoption automatically:
 * **Release Binary Downloads:** Counted live via the **Total Downloads** badge at the top of this README whenever a release binary is downloaded from [GitHub Releases](https://github.com/emirkefi/spider-web/releases).
@@ -162,10 +162,10 @@ This repository tracks community adoption automatically:
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
 Contributions, issues, and feature requests are welcome! Please read our [Contributing Guidelines](./CONTRIBUTING.md) and [Code of Conduct](./CODE_OF_CONDUCT.md) before submitting a Pull Request.
 
-## 📄 License
+## License
 
 Distributed under the **MIT License**. See [`LICENSE`](./LICENSE) for full details.
