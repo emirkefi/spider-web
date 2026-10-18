@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" fill="none">
+  <defs>
+    <!-- Apple-style metallic silver/graphite squircle background so the sharp black spider pops on both dark & light bars -->
+    <linearGradient id="bgSquircle" x1="64" y1="32" x2="448" y2="480" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#F5F7FA" />
+      <stop offset="50%" stop-color="#E4E7EC" />
+      <stop offset="100%" stop-color="#CBD2D9" />
+    </linearGradient>
+
+    <linearGradient id="spiderBlack" x1="120" y1="80" x2="392" y2="432" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#18181B" />
+      <stop offset="50%" stop-color="#09090B" />
+      <stop offset="100%" stop-color="#000000" />
+    </linearGradient>
+
+    <filter id="dropShadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="8" stdDeviation="10" flood-color="#000000" flood-opacity="0.28" />
+    </filter>
+  </defs>
+
+  <!-- Apple macOS Squircle Base -->
+  <rect x="28" y="28" width="456" height="456" rx="108" fill="url(#bgSquircle)" stroke="#18181B" stroke-width="10" />
+
+  <!-- Subtle Geometric Web Geometry in Background -->
+  <g stroke="#09090B" stroke-opacity="0.09" stroke-width="3">
+    <line x1="256" y1="28" x2="256" y2="484" />
+    <line x1="28" y1="256" x2="484" y2="256" />
+    <line x1="85" y1="85" x2="427" y2="427" />
+    <line x1="427" y1="85" x2="85" y2="427" />
+    <polygon points="256,110 359,153 402,256 359,359 256,402 153,359 110,256 153,153" fill="none" />
+    <polygon points="256,165 320,192 347,256 320,320 256,347 192,320 165,256 192,192" fill="none" />
+  </g>
+
+  <!-- Sharp Cyber-Geometric Black Spider -->
+  <g filter="url(#dropShadow)">
+    <!-- LEFT LEGS (Sharp articulated blade segments) -->
+    <!-- Leg L1 (Front-most) -->
+    <path d="M232 198 L176 126 L128 72 L152 138 L220 212 Z" fill="url(#spiderBlack)" />
+    <!-- Leg L2 (Upper mid) -->
+    <path d="M222 222 L134 166 L64 148 L124 190 L218 236 Z" fill="url(#spiderBlack)" />
+    <!-- Leg L3 (Lower mid) -->
+    <path d="M222 248 L124 246 L56 292 L134 268 L224 262 Z" fill="url(#spiderBlack)" />
+    <!-- Leg L4 (Rear) -->
+    <path d="M230 272 L152 336 L112 436 L176 346 L240 282 Z" fill="url(#spiderBlack)" />
+
+    <!-- RIGHT LEGS (Mirrored sharp articulated blade segments) -->
+    <!-- Leg R1 (Front-most) -->
+    <path d="M280 198 L336 126 L384 72 L360 138 L292 212 Z" fill="url(#spiderBlack)" />
+    <!-- Leg R2 (Upper mid) -->
+    <path d="M290 222 L378 166 L448 148 L388 190 L294 236 Z" fill="url(#spiderBlack)" />
+    <!-- Leg R3 (Lower mid) -->
+    <path d="M290 248 L388 246 L456 292 L378 268 L288 262 Z" fill="url(#spiderBlack)" />
+    <!-- Leg R4 (Rear) -->
+    <path d="M282 272 L360 336 L400 436 L336 346 L272 282 Z" fill="url(#spiderBlack)" />
+
+    <!-- Front Chelicerae / Fangs -->
+    <polygon points="244,174 232,140 248,158" fill="#09090B" />
+    <polygon points="268,174 280,140 264,158" fill="#09090B" />
+
+    <!-- Cephalothorax (Sharp Hexagonal Head/Thorax) -->
+    <polygon points="256,162 286,192 276,246 236,246 226,192" fill="url(#spiderBlack)" />
+
+    <!-- Abdomen (Faceted Razor Diamond Rear) -->
+    <polygon points="256,238 308,288 286,382 256,434 226,382 204,288" fill="url(#spiderBlack)" />
+
+    <!-- Subtle Razor Facet Highlights on Black Armor -->
+    <polygon points="256,258 274,296 256,396 238,296" fill="#27272A" opacity="0.55" />
+    <polygon points="244,186 252,194 242,200" fill="#F4F4F5" opacity="0.85" />
+    <polygon points="268,186 260,194 270,200" fill="#F4F4F5" opacity="0.85" />
+  </g>
+</svg>
