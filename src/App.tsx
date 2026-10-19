@@ -8,6 +8,7 @@ import { AnalyticsView } from './components/AnalyticsView';
 import { FocusListView } from './components/FocusListView';
 import {
   NewTaskModal,
+  TaskDetailModal,
   NewProjectModal,
   DeleteProjectModal,
   KeybindsModal,
@@ -50,6 +51,7 @@ export function App() {
   // Modals state
   const [isNewTaskOpen, setIsNewTaskOpen] = useState(false);
   const [newTaskDefaultStatus, setNewTaskDefaultStatus] = useState<TaskStatus>('todo');
+  const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [isNewProjectOpen, setIsNewProjectOpen] = useState(false);
   const [projectToDelete, setProjectToDelete] = useState<Project | null>(null);
   const [isKeybindsOpen, setIsKeybindsOpen] = useState(false);
@@ -99,6 +101,7 @@ export function App() {
 
       if (e.key === 'Escape') {
         setIsNewTaskOpen(false);
+        setSelectedTask(null);
         setIsNewProjectOpen(false);
         setProjectToDelete(null);
         setIsKeybindsOpen(false);
@@ -200,6 +203,12 @@ export function App() {
 
   const handleDeleteTask = (taskId: string) => {
     setTasks((prev) => prev.filter((t) => t.id !== taskId));
+  };
+
+  const handleUpdateTask = (updatedTask: Task) => {
+    setTasks((prev) =>
+      prev.map((t) => (t.id === updatedTask.id ? updatedTask : t))
+    );
   };
 
   const handleCreateTask = (newTaskData: Omit<Task, 'id' | 'createdAt'>) => {
@@ -310,6 +319,7 @@ export function App() {
               tasks={filteredTasks}
               projects={projects}
               isDark={isDark}
+              onSelectTask={(task) => setSelectedTask(task)}
               onMoveStatus={handleMoveStatus}
               onToggleUpNext={handleToggleUpNext}
               onToggleSubtask={handleToggleSubtask}
@@ -324,6 +334,7 @@ export function App() {
               tasks={filteredTasks}
               projects={projects}
               isDark={isDark}
+              onSelectTask={(task) => setSelectedTask(task)}
               onMoveStatus={handleMoveStatus}
               onToggleUpNext={handleToggleUpNext}
               onToggleSubtask={handleToggleSubtask}
@@ -336,6 +347,7 @@ export function App() {
               tasks={filteredTasks}
               projects={projects}
               isDark={isDark}
+              onSelectTask={(task) => setSelectedTask(task)}
               onMoveStatus={handleMoveStatus}
               onToggleUpNext={handleToggleUpNext}
               onToggleSubtask={handleToggleSubtask}
@@ -361,6 +373,15 @@ export function App() {
         defaultStatus={newTaskDefaultStatus}
         isDark={isDark}
         onCreateTask={handleCreateTask}
+      />
+
+      <TaskDetailModal
+        task={selectedTask}
+        projects={projects}
+        isDark={isDark}
+        onClose={() => setSelectedTask(null)}
+        onUpdateTask={handleUpdateTask}
+        onDeleteTask={handleDeleteTask}
       />
 
       <NewProjectModal
@@ -396,6 +417,7 @@ export function App() {
         setIsDark={setIsDark}
         tasks={tasks}
         setActiveView={setActiveView}
+        onSelectTask={(task) => setSelectedTask(task)}
         onMoveStatus={handleMoveStatus}
         onOpenNewTask={() => handleOpenNewTaskWithStatus('todo')}
         onOpenNewProject={() => setIsNewProjectOpen(true)}

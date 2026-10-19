@@ -8,7 +8,6 @@ import {
   ArrowRight,
   ArrowLeft,
   Trash2,
-  UserCheck,
   CheckCircle2,
   AlertTriangle,
 } from 'lucide-react';
@@ -19,6 +18,7 @@ interface TaskCardProps {
   task: Task;
   project?: Project;
   isDark: boolean;
+  onSelectTask: (task: Task) => void;
   onMoveStatus: (taskId: string, newStatus: TaskStatus) => void;
   onToggleUpNext: (taskId: string) => void;
   onToggleSubtask: (taskId: string, subtaskId: string) => void;
@@ -32,6 +32,7 @@ export const TaskCard: React.FC<TaskCardProps> = ({
   task,
   project,
   isDark,
+  onSelectTask,
   onMoveStatus,
   onToggleUpNext,
   onToggleSubtask,
@@ -50,7 +51,8 @@ export const TaskCard: React.FC<TaskCardProps> = ({
     <div
       draggable
       onDragStart={(e) => onDragStart(e, task.id)}
-      className={`group relative rounded-2xl p-3.5 border transition-all duration-200 cursor-grab active:cursor-grabbing ${
+      onClick={() => onSelectTask(task)}
+      className={`group relative rounded-2xl p-3.5 border transition-all duration-200 cursor-pointer active:cursor-grabbing ${
         isDark
           ? 'bg-zinc-900/80 hover:bg-zinc-800/90 border-white/[0.08] hover:border-white/20 shadow-lg shadow-black/25'
           : 'bg-white/95 hover:bg-white border-black/[0.07] hover:border-black/15 shadow-sm hover:shadow-md'
@@ -92,7 +94,7 @@ export const TaskCard: React.FC<TaskCardProps> = ({
               onToggleUpNext(task.id);
             }}
             title={task.upNext ? 'Pinned to Up Next Queue' : 'Add to Up Next Queue'}
-            className={`p-1 rounded-lg transition ${
+            className={`p-1 rounded-lg transition cursor-pointer ${
               task.upNext
                 ? 'bg-amber-500/20 text-amber-500'
                 : 'opacity-30 hover:opacity-100 hover:bg-amber-500/10 hover:text-amber-500'
@@ -105,7 +107,7 @@ export const TaskCard: React.FC<TaskCardProps> = ({
 
       {/* Task Title & Description */}
       <h3
-        className={`text-[13px] font-semibold leading-snug mb-1 ${
+        className={`text-[13px] font-semibold leading-snug mb-1 group-hover:text-blue-500 transition-colors ${
           task.status === 'done' ? 'line-through opacity-55' : ''
         }`}
       >
@@ -168,7 +170,7 @@ export const TaskCard: React.FC<TaskCardProps> = ({
                 e.stopPropagation();
                 onToggleSubtask(task.id, sub.id);
               }}
-              className="w-full flex items-center gap-2 text-left text-[11px] py-0.5 hover:opacity-100 transition"
+              className="w-full flex items-center gap-2 text-left text-[11px] py-0.5 hover:opacity-100 transition cursor-pointer"
             >
               <span
                 className={`w-3.5 h-3.5 rounded flex items-center justify-center border shrink-0 transition ${
@@ -249,9 +251,12 @@ export const TaskCard: React.FC<TaskCardProps> = ({
         <div className="flex items-center gap-1 opacity-70 group-hover:opacity-100 transition">
           {prevStatus && (
             <button
-              onClick={() => onMoveStatus(task.id, prevStatus)}
+              onClick={(e) => {
+                e.stopPropagation();
+                onMoveStatus(task.id, prevStatus);
+              }}
               title={`Move back to ${STATUS_CONFIG[prevStatus].label}`}
-              className={`p-1 rounded-lg border transition ${
+              className={`p-1 rounded-lg border transition cursor-pointer ${
                 isDark
                   ? 'border-white/10 hover:bg-white/10 text-zinc-300'
                   : 'border-black/10 hover:bg-black/5 text-zinc-700'
@@ -262,18 +267,24 @@ export const TaskCard: React.FC<TaskCardProps> = ({
           )}
           {nextStatus && (
             <button
-              onClick={() => onMoveStatus(task.id, nextStatus)}
+              onClick={(e) => {
+                e.stopPropagation();
+                onMoveStatus(task.id, nextStatus);
+              }}
               title={`Advance to ${STATUS_CONFIG[nextStatus].label}`}
-              className="flex items-center gap-1 px-2 py-1 rounded-lg text-[10px] font-semibold bg-blue-500/15 text-blue-500 hover:bg-blue-500 hover:text-white transition"
+              className="flex items-center gap-1 px-2 py-1 rounded-lg text-[10px] font-semibold bg-blue-500/15 text-blue-500 hover:bg-blue-500 hover:text-white transition cursor-pointer"
             >
               <span>{STATUS_CONFIG[nextStatus].label}</span>
               <ArrowRight size={11} />
             </button>
           )}
           <button
-            onClick={() => onDeleteTask(task.id)}
+            onClick={(e) => {
+              e.stopPropagation();
+              onDeleteTask(task.id);
+            }}
             title="Delete Task"
-            className="p-1 rounded-lg opacity-40 hover:opacity-100 hover:bg-rose-500/15 hover:text-rose-500 transition"
+            className="p-1 rounded-lg opacity-40 hover:opacity-100 hover:bg-rose-500/15 hover:text-rose-500 transition cursor-pointer"
           >
             <Trash2 size={12} />
           </button>

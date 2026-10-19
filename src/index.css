@@ -4,6 +4,11 @@
   :root {
     --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI", Roboto, sans-serif;
     --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    color-scheme: light;
+  }
+
+  :root.dark {
+    color-scheme: dark;
   }
 
   body {
@@ -14,6 +19,17 @@
 
   code, pre, .font-mono {
     font-family: var(--font-mono);
+  }
+
+  /* Native select & option contrast fallback */
+  select option {
+    background-color: #ffffff;
+    color: #18181b;
+  }
+
+  .dark select option {
+    background-color: #18181b;
+    color: #f4f4f5;
   }
 }
 
@@ -36,7 +52,7 @@
   background: rgba(156, 163, 175, 0.45);
 }
 
-/* Apple-style subtle animations */
+/* Subtle animations */
 @keyframes pulse-soft {
   0%, 100% { opacity: 1; }
   50% { opacity: 0.65; }

@@ -17,6 +17,7 @@ interface FocusListViewProps {
   tasks: Task[];
   projects: Project[];
   isDark: boolean;
+  onSelectTask: (task: Task) => void;
   onMoveStatus: (taskId: string, newStatus: TaskStatus) => void;
   onToggleUpNext: (taskId: string) => void;
   onToggleSubtask: (taskId: string, subtaskId: string) => void;
@@ -34,6 +35,7 @@ export const FocusListView: React.FC<FocusListViewProps> = ({
   tasks,
   projects,
   isDark,
+  onSelectTask,
   onMoveStatus,
   onToggleUpNext,
   onToggleSubtask,
@@ -116,10 +118,11 @@ export const FocusListView: React.FC<FocusListViewProps> = ({
             return (
               <div
                 key={task.id}
-                className={`p-4 rounded-2xl border transition-all flex flex-col md:flex-row md:items-center justify-between gap-4 backdrop-blur-xl ${
+                onClick={() => onSelectTask(task)}
+                className={`group p-4 rounded-2xl border transition-all flex flex-col md:flex-row md:items-center justify-between gap-4 backdrop-blur-xl cursor-pointer ${
                   isDark
-                    ? 'bg-zinc-900/75 hover:bg-zinc-800/80 border-white/[0.08]'
-                    : 'bg-white/95 hover:bg-white border-black/[0.07] shadow-2xs'
+                    ? 'bg-zinc-900/75 hover:bg-zinc-800/80 border-white/[0.08] hover:border-white/20'
+                    : 'bg-white/95 hover:bg-white border-black/[0.07] hover:border-black/15 shadow-2xs'
                 }`}
               >
                 <div className="space-y-1.5 min-w-0 flex-1">
@@ -165,7 +168,7 @@ export const FocusListView: React.FC<FocusListViewProps> = ({
                   </div>
 
                   <h3
-                    className={`text-sm font-semibold ${
+                    className={`text-sm font-semibold group-hover:text-blue-500 transition-colors ${
                       task.status === 'done' ? 'line-through opacity-50' : ''
                     }`}
                   >
@@ -179,8 +182,11 @@ export const FocusListView: React.FC<FocusListViewProps> = ({
                       {task.subtasks.map((s) => (
                         <button
                           key={s.id}
-                          onClick={() => onToggleSubtask(task.id, s.id)}
-                          className={`text-[11px] px-2 py-0.5 rounded-lg border flex items-center gap-1.5 transition ${
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onToggleSubtask(task.id, s.id);
+                          }}
+                          className={`text-[11px] px-2 py-0.5 rounded-lg border flex items-center gap-1.5 transition cursor-pointer ${
                             s.completed
                               ? 'bg-emerald-500/15 border-emerald-500/30 text-emerald-500 line-through opacity-70'
                               : isDark
@@ -214,9 +220,12 @@ export const FocusListView: React.FC<FocusListViewProps> = ({
                   </div>
 
                   <button
-                    onClick={() => onToggleUpNext(task.id)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onToggleUpNext(task.id);
+                    }}
                     title="Toggle Up Next"
-                    className={`p-2 rounded-xl border transition ${
+                    className={`p-2 rounded-xl border transition cursor-pointer ${
                       task.upNext
                         ? 'bg-amber-500/20 border-amber-500/40 text-amber-500'
                         : isDark
@@ -229,7 +238,10 @@ export const FocusListView: React.FC<FocusListViewProps> = ({
 
                   {task.status !== 'done' ? (
                     <button
-                      onClick={() => onMoveStatus(task.id, NEXT_STAGE[task.status])}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onMoveStatus(task.id, NEXT_STAGE[task.status]);
+                      }}
                       className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold bg-[#0A84FF] hover:bg-[#0070E0] text-white shadow-sm transition cursor-pointer"
                     >
                       <span>Move to {STATUS_CONFIG[NEXT_STAGE[task.status]].label}</span>

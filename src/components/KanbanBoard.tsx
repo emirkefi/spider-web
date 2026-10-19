@@ -8,6 +8,7 @@ interface KanbanBoardProps {
   tasks: Task[];
   projects: Project[];
   isDark: boolean;
+  onSelectTask: (task: Task) => void;
   onMoveStatus: (taskId: string, newStatus: TaskStatus) => void;
   onToggleUpNext: (taskId: string) => void;
   onToggleSubtask: (taskId: string, subtaskId: string) => void;
@@ -21,6 +22,7 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
   tasks,
   projects,
   isDark,
+  onSelectTask,
   onMoveStatus,
   onToggleUpNext,
   onToggleSubtask,
@@ -125,7 +127,7 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
                 <button
                   onClick={() => onOpenNewTaskWithStatus(status)}
                   title={`Add task to ${cfg.label}`}
-                  className={`p-1.5 rounded-xl border transition ${
+                  className={`p-1.5 rounded-xl border transition cursor-pointer ${
                     isDark
                       ? 'bg-white/5 border-white/10 hover:bg-white/15 text-zinc-300'
                       : 'bg-white border-black/10 hover:bg-zinc-50 text-zinc-700 shadow-2xs'
@@ -159,6 +161,7 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
                     task={task}
                     project={projectMap.get(task.projectId)}
                     isDark={isDark}
+                    onSelectTask={onSelectTask}
                     onMoveStatus={onMoveStatus}
                     onToggleUpNext={onToggleUpNext}
                     onToggleSubtask={onToggleSubtask}
