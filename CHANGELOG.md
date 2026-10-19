@@ -2,6 +2,13 @@
 
 All notable changes to **SpiderWeb** are documented in this file.
 
+## [1.1.0] - 2026-10-19
+
+### Added
+- **Task Preview & Edit Modal:** Click any task card or list item to inspect and edit all task fields, due times, Git metadata, and subtasks.
+- **Custom Theme-Aware Dropdowns:** Replaced native OS select menus with custom dark/light dropdowns so text is always readable on Wayland.
+- **Fresh Empty Workspace Default:** New installations now start with 0 pre-made projects and 0 tasks.
+
 ## [1.0.0] - 2026-10-18
 
 ### Added

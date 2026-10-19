@@ -303,11 +303,15 @@ export const NewTaskModal: React.FC<NewTaskModalProps> = ({
                 isDark={isDark}
                 value={projectId}
                 onChange={setProjectId}
-                options={projects.map((p) => ({
-                  value: p.id,
-                  label: p.name,
-                  dotColor: p.color,
-                }))}
+                options={
+                  projects.length > 0
+                    ? projects.map((p) => ({
+                        value: p.id,
+                        label: p.name,
+                        dotColor: p.color,
+                      }))
+                    : [{ value: 'unassigned', label: 'No Project', dotColor: '#8E8E93' }]
+                }
               />
             </div>
 
@@ -720,11 +724,15 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
                 isDark={isDark}
                 value={projectId}
                 onChange={setProjectId}
-                options={projects.map((p) => ({
-                  value: p.id,
-                  label: p.name,
-                  dotColor: p.color,
-                }))}
+                options={
+                  projects.length > 0
+                    ? projects.map((p) => ({
+                        value: p.id,
+                        label: p.name,
+                        dotColor: p.color,
+                      }))
+                    : [{ value: 'unassigned', label: 'No Project', dotColor: '#8E8E93' }]
+                }
               />
             </div>
 

@@ -16,8 +16,8 @@ import {
 } from './components/Modals';
 
 const STORAGE_KEYS = {
-  TASKS: 'spiderweb_tasks_v1',
-  PROJECTS: 'spiderweb_projects_v1',
+  TASKS: 'spiderweb_tasks_v2',
+  PROJECTS: 'spiderweb_projects_v2',
   THEME: 'spiderweb_theme_dark_v1',
   SIDEBAR_COLLAPSED: 'spiderweb_sidebar_collapsed_v1',
 };
