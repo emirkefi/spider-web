@@ -25,6 +25,7 @@
 * **Quick Access Views:** Switch between **Kanban Board**, **Up Next Queue**, **My Tasks**, and **Progress & Charts**.
 * **Progress & Velocity Charts:** Completion ring, stage distribution bar, project progress bars, and a Due Time Countdown Radar.
 * **Collapsible Sidebar:** Toggle between the full sidebar and an **icon-only dock** (`[`). Create or remove projects at any time.
+* **Notifications Center:** In-app notification center and native Linux desktop push alerts (`notify-send`) for task creations, status updates, code reviews, and deadline reminders (`Alt+N`).
 * **Top Right Controls:** Instant search (`/`), priority filter, **Keybinds popup (`?`)**, **Light / Dark mode toggle (`T`)**, and **New Task (`N`)**.
 * **Standalone Desktop App:** Compiles into a single native `./spiderweb` binary — no local server or browser needed.
 
@@ -85,6 +86,7 @@ Press **`?`** inside the app to view the shortcuts popup.
 | <kbd>P</kbd> | New Project |
 | <kbd>/</kbd> | Focus Search Bar |
 | <kbd>T</kbd> | Toggle Light / Dark Mode |
+| <kbd>Alt</kbd> + <kbd>N</kbd> | Toggle Notification Center |
 | <kbd>?</kbd> | Show Keybinds Popup |
 | <kbd>Alt</kbd> + <kbd>1..4</kbd> | Switch Views (Board / Up Next / My Tasks / Charts) |
 | <kbd>Esc</kbd> | Close Modal |

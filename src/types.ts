@@ -37,3 +37,16 @@ export interface Project {
 }
 
 export type ActiveView = 'board' | 'up_next' | 'my_tasks' | 'analytics';
+
+export type NotificationType = 'task_created' | 'task_moved' | 'task_completed' | 'due_soon' | 'overdue' | 'project_created';
+
+export interface AppNotification {
+  id: string;
+  type: NotificationType;
+  title: string;
+  message: string;
+  createdAt: string; // ISO string
+  read: boolean;
+  taskId?: string;
+  projectId?: string;
+}

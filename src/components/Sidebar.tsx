@@ -18,6 +18,7 @@ import {
   Keyboard,
   PanelLeftClose,
   PanelLeftOpen,
+  Bell,
 } from 'lucide-react';
 import { ActiveView, Project, Task } from '../types';
 import { getDueTimeMeta } from '../utils';
@@ -37,6 +38,8 @@ interface SidebarProps {
   onDeleteProject: (projectId: string) => void;
   onOpenCommandPalette: () => void;
   onOpenKeybindsModal: () => void;
+  unreadNotificationsCount?: number;
+  onOpenNotifications?: () => void;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
@@ -53,6 +56,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onDeleteProject,
   onOpenCommandPalette,
   onOpenKeybindsModal,
+  unreadNotificationsCount = 0,
+  onOpenNotifications,
 }) => {
   const totalTasks = tasks.length;
   const doneTasks = tasks.filter((t) => t.status === 'done').length;
@@ -250,8 +255,26 @@ export const Sidebar: React.FC<SidebarProps> = ({
           </div>
         </div>
 
-        {/* Bottom Dock Icons: Command Palette & Keybinds */}
+        {/* Bottom Dock Icons: Notifications, Command Palette & Keybinds */}
         <div className="flex flex-col items-center gap-2">
+          {onOpenNotifications && (
+            <button
+              onClick={onOpenNotifications}
+              title={`Notifications (${unreadNotificationsCount} unread)`}
+              className={`relative w-10 h-10 rounded-2xl flex items-center justify-center border transition cursor-pointer ${
+                isDark
+                  ? 'bg-white/5 border-white/10 text-zinc-300 hover:bg-white/10'
+                  : 'bg-black/[0.04] border-black/10 text-zinc-700 hover:bg-black/10'
+              }`}
+            >
+              <Bell size={16} className={unreadNotificationsCount > 0 ? 'text-blue-500' : 'opacity-70'} />
+              {unreadNotificationsCount > 0 && (
+                <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-blue-500 text-white text-[9px] font-mono font-bold flex items-center justify-center">
+                  {unreadNotificationsCount > 9 ? '9+' : unreadNotificationsCount}
+                </span>
+              )}
+            </button>
+          )}
           <button
             onClick={onOpenCommandPalette}
             title="Command Palette (Ctrl+K)"
@@ -633,6 +656,25 @@ export const Sidebar: React.FC<SidebarProps> = ({
           isDark ? 'border-white/10 bg-black/20' : 'border-black/[0.07] bg-zinc-50/70'
         }`}
       >
+        {onOpenNotifications && (
+          <button
+            onClick={onOpenNotifications}
+            title="Notification Center (Alt+N)"
+            className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border text-[11px] font-medium transition cursor-pointer ${
+              isDark
+                ? 'border-white/10 bg-white/5 hover:bg-white/10 text-zinc-300'
+                : 'border-black/10 bg-white hover:bg-zinc-100 text-zinc-700 shadow-2xs'
+            }`}
+          >
+            <Bell size={13} className={unreadNotificationsCount > 0 ? 'text-blue-500' : 'opacity-70'} />
+            {unreadNotificationsCount > 0 && (
+              <span className="font-mono text-[10px] px-1 py-0.2 rounded-full bg-blue-500 text-white font-bold">
+                {unreadNotificationsCount}
+              </span>
+            )}
+          </button>
+        )}
+
         <button
           onClick={onOpenKeybindsModal}
           className={`flex-1 flex items-center justify-between px-2.5 py-1.5 rounded-xl border text-[11px] font-medium transition cursor-pointer ${

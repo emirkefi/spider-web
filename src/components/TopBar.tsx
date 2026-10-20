@@ -9,6 +9,7 @@ import {
   X,
   Keyboard,
   Trash2,
+  Bell,
 } from 'lucide-react';
 import { ActiveView, Project, Task, TaskPriority } from '../types';
 import { getDueTimeMeta } from '../utils';
@@ -28,6 +29,8 @@ interface TopBarProps {
   onOpenNewProject: () => void;
   onDeleteProject: (projectId: string) => void;
   onOpenKeybindsModal: () => void;
+  unreadNotificationsCount?: number;
+  onOpenNotifications?: () => void;
 }
 
 export const TopBar: React.FC<TopBarProps> = ({
@@ -44,6 +47,8 @@ export const TopBar: React.FC<TopBarProps> = ({
   onOpenNewTask,
   onDeleteProject,
   onOpenKeybindsModal,
+  unreadNotificationsCount = 0,
+  onOpenNotifications,
 }) => {
   const searchInputRef = useRef<HTMLInputElement>(null);
 
@@ -240,6 +245,26 @@ export const TopBar: React.FC<TopBarProps> = ({
             ?
           </kbd>
         </button>
+
+        {/* Notifications Center Button */}
+        {onOpenNotifications && (
+          <button
+            onClick={onOpenNotifications}
+            title="Notification Center (Alt+N)"
+            className={`relative flex items-center justify-center w-8 h-8 rounded-xl border text-xs font-medium transition-all active:scale-95 cursor-pointer ${
+              isDark
+                ? 'bg-white/[0.07] border-white/10 text-zinc-200 hover:bg-white/12'
+                : 'bg-black/[0.05] border-black/10 text-zinc-700 hover:bg-black/10'
+            }`}
+          >
+            <Bell size={14} className={unreadNotificationsCount > 0 ? 'text-blue-500' : 'opacity-70'} />
+            {unreadNotificationsCount > 0 && (
+              <span className="absolute -top-1 -right-1 min-w-4 h-4 px-1 rounded-full bg-blue-500 text-white text-[9px] font-mono font-bold flex items-center justify-center shadow-xs">
+                {unreadNotificationsCount > 99 ? '99+' : unreadNotificationsCount}
+              </span>
+            )}
+          </button>
+        )}
 
         {/* Light / Dark Mode Apple Toggle Button */}
         <button

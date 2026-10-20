@@ -23,6 +23,7 @@ import {
   Pencil,
   Eye,
   Save,
+  Bell,
 } from 'lucide-react';
 import { ActiveView, Project, Subtask, Task, TaskPriority, TaskStatus } from '../types';
 import { getDueTimeMeta, PRIORITY_CONFIG, STATUS_CONFIG } from '../utils';
@@ -1299,6 +1300,7 @@ workspace = special:spiderweb, on-created-empty:/home/umbra/Projects/Coding/spid
     { keys: ['N'], description: 'Create a New Task in active project' },
     { keys: ['P'], description: 'Create a New Project' },
     { keys: ['/'], description: 'Focus Top-Right Search Bar' },
+    { keys: ['Alt', 'N'], description: 'Toggle Notification Center' },
     { keys: ['T'], description: 'Toggle Light / Dark Mode' },
     { keys: ['?'], description: 'Toggle this Keybinds Cheat Sheet' },
     { keys: ['Esc'], description: 'Close any open popup or modal' },
@@ -1501,6 +1503,7 @@ interface CommandPaletteModalProps {
   onOpenNewTask: () => void;
   onOpenNewProject: () => void;
   onOpenKeybindsModal: () => void;
+  onOpenNotifications?: () => void;
 }
 
 export const CommandPaletteModal: React.FC<CommandPaletteModalProps> = ({
@@ -1515,6 +1518,7 @@ export const CommandPaletteModal: React.FC<CommandPaletteModalProps> = ({
   onOpenNewTask,
   onOpenNewProject,
   onOpenKeybindsModal,
+  onOpenNotifications,
 }) => {
   const [query, setQuery] = useState('');
 
@@ -1590,6 +1594,20 @@ export const CommandPaletteModal: React.FC<CommandPaletteModalProps> = ({
               </span>
               <span className="font-mono opacity-70">P</span>
             </button>
+            {onOpenNotifications && (
+              <button
+                onClick={() => {
+                  onClose();
+                  onOpenNotifications();
+                }}
+                className="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs hover:bg-blue-500 hover:text-white transition cursor-pointer"
+              >
+                <span className="flex items-center gap-2">
+                  <Bell size={14} /> Open Notification Center
+                </span>
+                <span className="font-mono opacity-70">Alt+N</span>
+              </button>
+            )}
             <button
               onClick={() => {
                 onClose();
