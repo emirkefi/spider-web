@@ -163,11 +163,35 @@ int main(int argc, char **argv) {
     g_setenv("GDK_BACKEND", "wayland,x11", FALSE);
 
     // Ensure Rust iroh P2P networking core is running in the background
-    const char *core_path = "/home/umbra/Projects/Coding/spider-web/src-tauri/target/debug/spiderweb-core";
-    if (g_file_test(core_path, G_FILE_TEST_IS_EXECUTABLE)) {
+    gchar *local_bin_core = g_build_filename(g_get_home_dir(), ".local", "bin", "spiderweb-core", NULL);
+    const char *candidates[] = {
+        local_bin_core,
+        "./spiderweb-core",
+        "./src-tauri/target/release/spiderweb-core",
+        "./src-tauri/target/debug/spiderweb-core",
+        NULL
+    };
+
+    const char *core_path = NULL;
+    for (int i = 0; candidates[i] != NULL; i++) {
+        if (g_file_test(candidates[i], G_FILE_TEST_IS_EXECUTABLE)) {
+            core_path = candidates[i];
+            break;
+        }
+    }
+
+    if (core_path != NULL) {
         char *core_argv[] = { (char *)core_path, NULL };
         g_spawn_async(NULL, core_argv, NULL, G_SPAWN_DEFAULT, NULL, NULL, NULL, NULL);
+    } else {
+        gchar *path_core = g_find_program_in_path("spiderweb-core");
+        if (path_core != NULL) {
+            char *core_argv[] = { path_core, NULL };
+            g_spawn_async(NULL, core_argv, NULL, G_SPAWN_DEFAULT, NULL, NULL, NULL, NULL);
+            g_free(path_core);
+        }
     }
+    g_free(local_bin_core);
 
     GtkApplication *app = gtk_application_new(
         "dev.hyprland.spiderweb",

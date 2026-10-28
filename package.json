@@ -28,7 +28,8 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "build:native": "tsc && vite build && node scripts/bundle-native.mjs && gcc -O2 native/main.c -o spiderweb $(pkg-config --cflags --libs gtk4 webkitgtk-6.0)",
+    "build:p2p": "cargo build --manifest-path src-tauri/Cargo.toml --bin spiderweb-core && cp -f src-tauri/target/debug/spiderweb-core ./spiderweb-core",
+    "build:native": "tsc && vite build && node scripts/bundle-native.mjs && gcc -O2 native/main.c -o spiderweb $(pkg-config --cflags --libs gtk4 webkitgtk-6.0) && cargo build --manifest-path src-tauri/Cargo.toml --bin spiderweb-core && cp -f src-tauri/target/debug/spiderweb-core ./spiderweb-core",
     "p2p:core": "cargo run --manifest-path src-tauri/Cargo.toml --bin spiderweb-core",
     "p2p:cli": "cargo run --manifest-path src-tauri/Cargo.toml --bin spiderweb-peer-cli --",
     "test:p2p": "cargo test --manifest-path src-tauri/Cargo.toml -- --nocapture",

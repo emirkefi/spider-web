@@ -24,12 +24,15 @@ jobs:
           node-version: '22'
           cache: 'npm'
 
+      - name: Setup Rust Toolchain
+        uses: dtolnay/rust-toolchain@stable
+
       - name: Install GTK4 & WebKitGTK 6.0 system headers
         run: |
           sudo apt-get update
           sudo apt-get install -y build-essential pkg-config libgtk-4-dev libwebkitgtk-6.0-dev
 
-      - name: Install dependencies & build native binary
+      - name: Install dependencies & build native binary + Iroh P2P core
         run: |
           npm ci
           npm run build:native
@@ -40,6 +43,7 @@ jobs:
           name: spiderweb-linux-x86_64
           path: |
             spiderweb
+            spiderweb-core
             spiderweb.desktop
             public/spider-icon.svg
 
@@ -50,5 +54,6 @@ jobs:
           generate_release_notes: true
           files: |
             spiderweb
+            spiderweb-core
             spiderweb.desktop
             public/spider-icon.svg

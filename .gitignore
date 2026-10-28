@@ -3,6 +3,7 @@ node_modules/
 dist/
 native/bundle.h
 spiderweb
+spiderweb-core
 target/
 src-tauri/target/
 

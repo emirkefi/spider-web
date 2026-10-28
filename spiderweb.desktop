@@ -1,8 +1,8 @@
 [Desktop Entry]
 Name=SpiderWeb Kanban
 Comment=Apple-style Kanban & Code Review Workflow for Hyprland
-Exec=/home/umbra/Projects/Coding/spider-web/spiderweb
-Icon=/home/umbra/Projects/Coding/spider-web/public/spider-icon.svg
+Exec=spiderweb
+Icon=spiderweb
 Terminal=false
 Type=Application
 Categories=Development;ProjectManagement;Utility;
