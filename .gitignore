@@ -3,6 +3,8 @@ node_modules/
 dist/
 native/bundle.h
 spiderweb
+target/
+src-tauri/target/
 
 # Logs & OS files
 *.log

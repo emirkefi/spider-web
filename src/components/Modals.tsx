@@ -24,9 +24,11 @@ import {
   Eye,
   Save,
   Bell,
+  Users,
 } from 'lucide-react';
-import { ActiveView, Project, Subtask, Task, TaskPriority, TaskStatus } from '../types';
+import { ActiveView, Group, Project, Role, Subtask, Task, TaskPriority, TaskStatus, User } from '../types';
 import { getDueTimeMeta, PRIORITY_CONFIG, STATUS_CONFIG } from '../utils';
+import { hasPermission } from '../rbac/rbacUtils';
 
 interface DropdownOption {
   value: string;
@@ -149,6 +151,10 @@ interface NewTaskModalProps {
   defaultProjectId: string;
   defaultStatus: TaskStatus;
   isDark: boolean;
+  users?: User[];
+  groups?: Group[];
+  roles?: Role[];
+  currentUserId?: string;
   onCreateTask: (task: Omit<Task, 'id' | 'createdAt'>) => void;
 }
 
@@ -159,6 +165,10 @@ export const NewTaskModal: React.FC<NewTaskModalProps> = ({
   defaultProjectId,
   defaultStatus,
   isDark,
+  users = [],
+  groups = [],
+  roles = [],
+  currentUserId,
   onCreateTask,
 }) => {
   const [title, setTitle] = useState('');
@@ -167,6 +177,9 @@ export const NewTaskModal: React.FC<NewTaskModalProps> = ({
   const [priority, setPriority] = useState<TaskPriority>('high');
   const [projectId, setProjectId] = useState(defaultProjectId);
   const [dueHours, setDueHours] = useState('24');
+  const [assigneeSelection, setAssigneeSelection] = useState<string>(() => {
+    return currentUserId ? `user:${currentUserId}` : 'unassigned';
+  });
   const [branchName, setBranchName] = useState('');
   const [prUrl, setPrUrl] = useState('');
   const [tagsInput, setTagsInput] = useState('hyprland, rust');
@@ -208,6 +221,14 @@ export const NewTaskModal: React.FC<NewTaskModalProps> = ({
       .map((t) => t.trim().replace(/^#/, ''))
       .filter(Boolean);
 
+    let finalAssigneeId: string | undefined = undefined;
+    let finalAssigneeGroupId: string | undefined = undefined;
+    if (assigneeSelection.startsWith('user:')) {
+      finalAssigneeId = assigneeSelection.replace('user:', '');
+    } else if (assigneeSelection.startsWith('group:')) {
+      finalAssigneeGroupId = assigneeSelection.replace('group:', '');
+    }
+
     onCreateTask({
       title: title.trim(),
       description: description.trim(),
@@ -215,7 +236,9 @@ export const NewTaskModal: React.FC<NewTaskModalProps> = ({
       priority,
       projectId: projectId || projects[0]?.id || 'proj-hypr-core',
       dueDate,
-      assignedToMe,
+      assignedToMe: finalAssigneeId === currentUserId || assignedToMe,
+      assigneeId: finalAssigneeId,
+      assigneeGroupId: finalAssigneeGroupId,
       upNext,
       tags,
       branchName: branchName.trim() || undefined,
@@ -296,8 +319,8 @@ export const NewTaskModal: React.FC<NewTaskModalProps> = ({
             />
           </div>
 
-          {/* Grid for Project, Stage, Priority, Due Time using Custom Theme-Aware Dropdowns */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          {/* Grid for Project, Stage, Priority, Due Time & Assignee */}
+          <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
             <div>
               <label className="block text-[11px] font-medium opacity-65 mb-1">Project</label>
               <CustomSelect
@@ -358,6 +381,31 @@ export const NewTaskModal: React.FC<NewTaskModalProps> = ({
                   { value: '24', label: '24 Hours (1 Day)' },
                   { value: '48', label: '48 Hours (2 Days)' },
                   { value: '120', label: '5 Days (Sprint)' },
+                ]}
+              />
+            </div>
+
+            <div>
+              <label className="block text-[11px] font-medium opacity-65 mb-1">Assignee</label>
+              <CustomSelect
+                isDark={isDark}
+                value={assigneeSelection}
+                onChange={setAssigneeSelection}
+                options={[
+                  { value: 'unassigned', label: 'Unassigned', dotColor: '#8E8E93' },
+                  ...users.map((u) => {
+                    const r = roles.find((role) => role.id === u.roleId);
+                    return {
+                      value: `user:${u.id}`,
+                      label: u.name,
+                      dotColor: r?.color || '#0A84FF',
+                    };
+                  }),
+                  ...groups.map((g) => ({
+                    value: `group:${g.id}`,
+                    label: `Team: ${g.name}`,
+                    dotColor: g.color || '#BF5AF2',
+                  })),
                 ]}
               />
             </div>
@@ -484,6 +532,10 @@ interface TaskDetailModalProps {
   task: Task | null;
   projects: Project[];
   isDark: boolean;
+  users?: User[];
+  groups?: Group[];
+  roles?: Role[];
+  currentUserId?: string;
   onClose: () => void;
   onUpdateTask: (updatedTask: Task) => void;
   onDeleteTask: (taskId: string) => void;
@@ -493,6 +545,10 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
   task,
   projects,
   isDark,
+  users = [],
+  groups = [],
+  roles = [],
+  currentUserId,
   onClose,
   onUpdateTask,
   onDeleteTask,
@@ -503,6 +559,7 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
   const [priority, setPriority] = useState<TaskPriority>('high');
   const [projectId, setProjectId] = useState('');
   const [dueAction, setDueAction] = useState('keep');
+  const [assigneeSelection, setAssigneeSelection] = useState<string>('unassigned');
   const [branchName, setBranchName] = useState('');
   const [prUrl, setPrUrl] = useState('');
   const [tagsInput, setTagsInput] = useState('');
@@ -520,6 +577,15 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
       setPriority(task.priority);
       setProjectId(task.projectId);
       setDueAction('keep');
+      if (task.assigneeId) {
+        setAssigneeSelection(`user:${task.assigneeId}`);
+      } else if (task.assigneeGroupId) {
+        setAssigneeSelection(`group:${task.assigneeGroupId}`);
+      } else if (task.assignedToMe && currentUserId) {
+        setAssigneeSelection(`user:${currentUserId}`);
+      } else {
+        setAssigneeSelection('unassigned');
+      }
       setBranchName(task.branchName || '');
       setPrUrl(task.prUrl || '');
       setTagsInput(task.tags.join(', '));
@@ -529,12 +595,31 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
       setSubtasks(task.subtasks || []);
       setNewSubtaskTitle('');
     }
-  }, [task]);
+  }, [task, currentUserId]);
 
   if (!task) return null;
 
   const currentDueMeta = getDueTimeMeta(task.dueDate, status);
   const project = projects.find((p) => p.id === projectId);
+  const currentUser = users.find((u) => u.id === currentUserId);
+  const canDelete = currentUser ? hasPermission(currentUser, 'tasks:delete', roles) : true;
+
+  const assigneeOptions = [
+    { value: 'unassigned', label: 'Unassigned', dotColor: '#8E8E93' },
+    ...users.map((u) => {
+      const r = roles.find((role) => role.id === u.roleId);
+      return {
+        value: `user:${u.id}`,
+        label: `${u.name} (${r?.name || 'Member'})`,
+        dotColor: r?.color || '#0A84FF',
+      };
+    }),
+    ...groups.map((g) => ({
+      value: `group:${g.id}`,
+      label: `Team: ${g.name}`,
+      dotColor: g.color || '#BF5AF2',
+    })),
+  ];
 
   const handleToggleLocalSubtask = (subId: string) => {
     setSubtasks((prev) =>
@@ -574,6 +659,16 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
       .map((t) => t.trim().replace(/^#/, ''))
       .filter(Boolean);
 
+    let finalAssigneeId: string | undefined = undefined;
+    let finalAssigneeGroupId: string | undefined = undefined;
+    if (assigneeSelection.startsWith('user:')) {
+      finalAssigneeId = assigneeSelection.replace('user:', '');
+    } else if (assigneeSelection.startsWith('group:')) {
+      finalAssigneeGroupId = assigneeSelection.replace('group:', '');
+    }
+
+    const finalAssignedToMe = finalAssigneeId === currentUserId || assignedToMe;
+
     onUpdateTask({
       ...task,
       title: title.trim(),
@@ -587,7 +682,9 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
       tags,
       estimateMinutes: Number(estimateMinutes) || 45,
       upNext,
-      assignedToMe,
+      assignedToMe: finalAssignedToMe,
+      assigneeId: finalAssigneeId,
+      assigneeGroupId: finalAssigneeGroupId,
       subtasks,
     });
 
@@ -657,17 +754,28 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
           </div>
 
           <div className="flex items-center gap-1.5">
-            <button
-              type="button"
-              onClick={() => {
-                onDeleteTask(task.id);
-                onClose();
-              }}
-              title="Delete Task"
-              className="p-2 rounded-xl text-rose-500 hover:bg-rose-500/15 transition cursor-pointer"
-            >
-              <Trash2 size={15} />
-            </button>
+            {canDelete ? (
+              <button
+                type="button"
+                onClick={() => {
+                  onDeleteTask(task.id);
+                  onClose();
+                }}
+                title="Delete Task"
+                className="p-2 rounded-xl text-rose-500 hover:bg-rose-500/15 transition cursor-pointer"
+              >
+                <Trash2 size={15} />
+              </button>
+            ) : (
+              <button
+                type="button"
+                disabled
+                title="You lack permission to delete tasks"
+                className="p-2 rounded-xl opacity-30 text-zinc-500 cursor-not-allowed"
+              >
+                <Trash2 size={15} />
+              </button>
+            )}
             <button
               type="button"
               onClick={onClose}
@@ -715,8 +823,8 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
             />
           </div>
 
-          {/* 4-Column Metadata Selector Row */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          {/* 5-Column Metadata Selector Row */}
+          <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
             <div>
               <label className="block text-[11px] font-medium opacity-65 mb-1">
                 Project
@@ -768,6 +876,18 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
                   { value: 'medium', label: 'Medium', dotColor: '#0A84FF' },
                   { value: 'low', label: 'Low', dotColor: '#8E8E93' },
                 ]}
+              />
+            </div>
+
+            <div>
+              <label className="block text-[11px] font-medium opacity-65 mb-1">
+                Assignee
+              </label>
+              <CustomSelect
+                isDark={isDark}
+                value={assigneeSelection}
+                onChange={setAssigneeSelection}
+                options={assigneeOptions}
               />
             </div>
 
@@ -1301,6 +1421,7 @@ workspace = special:spiderweb, on-created-empty:/home/umbra/Projects/Coding/spid
     { keys: ['P'], description: 'Create a New Project' },
     { keys: ['/'], description: 'Focus Top-Right Search Bar' },
     { keys: ['Alt', 'N'], description: 'Toggle Notification Center' },
+    { keys: ['Alt', 'U'], description: 'Manage Team, Users & RBAC Roles' },
     { keys: ['T'], description: 'Toggle Light / Dark Mode' },
     { keys: ['?'], description: 'Toggle this Keybinds Cheat Sheet' },
     { keys: ['Esc'], description: 'Close any open popup or modal' },
@@ -1504,6 +1625,7 @@ interface CommandPaletteModalProps {
   onOpenNewProject: () => void;
   onOpenKeybindsModal: () => void;
   onOpenNotifications?: () => void;
+  onOpenTeamModal?: () => void;
 }
 
 export const CommandPaletteModal: React.FC<CommandPaletteModalProps> = ({
@@ -1519,6 +1641,7 @@ export const CommandPaletteModal: React.FC<CommandPaletteModalProps> = ({
   onOpenNewProject,
   onOpenKeybindsModal,
   onOpenNotifications,
+  onOpenTeamModal,
 }) => {
   const [query, setQuery] = useState('');
 
@@ -1606,6 +1729,20 @@ export const CommandPaletteModal: React.FC<CommandPaletteModalProps> = ({
                   <Bell size={14} /> Open Notification Center
                 </span>
                 <span className="font-mono opacity-70">Alt+N</span>
+              </button>
+            )}
+            {onOpenTeamModal && (
+              <button
+                onClick={() => {
+                  onClose();
+                  onOpenTeamModal();
+                }}
+                className="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs hover:bg-blue-500 hover:text-white transition cursor-pointer"
+              >
+                <span className="flex items-center gap-2">
+                  <Users size={14} /> Manage Team, Users & Roles
+                </span>
+                <span className="font-mono opacity-70">Alt+U</span>
               </button>
             )}
             <button

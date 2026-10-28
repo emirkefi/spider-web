@@ -1,0 +1,45 @@
+[package]
+name = "spiderweb-core"
+version = "1.2.0"
+description = "SpiderWeb Rust Core with iroh QUIC P2P, Local mDNS Discovery, iroh-gossip, and Custom ALPN CRDT Sync"
+authors = ["emirkefi"]
+license = "MIT"
+edition = "2021"
+default-run = "spiderweb-core"
+
+[lib]
+name = "spiderweb_core"
+path = "src/lib.rs"
+
+[[bin]]
+name = "spiderweb-core"
+path = "src/main.rs"
+
+[[bin]]
+name = "spiderweb-peer-cli"
+path = "src/bin/peer_cli.rs"
+
+[features]
+default = []
+# Enable full Tauri v2 desktop window runtime when building via `cargo tauri`
+tauri-runtime = ["dep:tauri"]
+
+[dependencies]
+anyhow = "1.0"
+blake3 = "1.8"
+bytes = "1.7"
+data-encoding = "2.6"
+dirs = "6.0"
+iroh = { version = "1.4.1", features = ["portmapper"] }
+iroh-base = "1.4.1"
+iroh-gossip = "0.101.0"
+iroh-mdns-address-lookup = "0.6.1"
+n0-future = "0.3"
+n0-watcher = "1.0"
+rand = "0.10"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+tokio = { version = "1", features = ["full"] }
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+tauri = { version = "2", optional = true }

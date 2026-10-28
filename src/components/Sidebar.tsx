@@ -19,6 +19,7 @@ import {
   PanelLeftClose,
   PanelLeftOpen,
   Bell,
+  Users,
 } from 'lucide-react';
 import { ActiveView, Project, Task } from '../types';
 import { getDueTimeMeta } from '../utils';
@@ -40,6 +41,7 @@ interface SidebarProps {
   onOpenKeybindsModal: () => void;
   unreadNotificationsCount?: number;
   onOpenNotifications?: () => void;
+  onOpenTeamModal?: () => void;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
@@ -58,6 +60,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onOpenKeybindsModal,
   unreadNotificationsCount = 0,
   onOpenNotifications,
+  onOpenTeamModal,
 }) => {
   const totalTasks = tasks.length;
   const doneTasks = tasks.filter((t) => t.status === 'done').length;
@@ -273,6 +276,19 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   {unreadNotificationsCount > 9 ? '9+' : unreadNotificationsCount}
                 </span>
               )}
+            </button>
+          )}
+          {onOpenTeamModal && (
+            <button
+              onClick={onOpenTeamModal}
+              title="Team, Roles & RBAC (Alt+U)"
+              className={`w-10 h-10 rounded-2xl flex items-center justify-center border transition cursor-pointer ${
+                isDark
+                  ? 'bg-white/5 border-white/10 text-zinc-300 hover:bg-white/10'
+                  : 'bg-black/[0.04] border-black/10 text-zinc-700 hover:bg-black/10'
+              }`}
+            >
+              <Users size={16} />
             </button>
           )}
           <button
@@ -672,6 +688,21 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 {unreadNotificationsCount}
               </span>
             )}
+          </button>
+        )}
+
+        {onOpenTeamModal && (
+          <button
+            onClick={onOpenTeamModal}
+            title="Team, Roles & RBAC (Alt+U)"
+            className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border text-[11px] font-medium transition cursor-pointer ${
+              isDark
+                ? 'border-white/10 bg-white/5 hover:bg-white/10 text-zinc-300'
+                : 'border-black/10 bg-white hover:bg-zinc-100 text-zinc-700 shadow-2xs'
+            }`}
+          >
+            <Users size={13} className="text-blue-500" />
+            <span className="hidden sm:inline">Team</span>
           </button>
         )}
 

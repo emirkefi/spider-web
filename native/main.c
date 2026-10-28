@@ -162,6 +162,13 @@ int main(int argc, char **argv) {
     // Prefer native Wayland backend on Hyprland
     g_setenv("GDK_BACKEND", "wayland,x11", FALSE);
 
+    // Ensure Rust iroh P2P networking core is running in the background
+    const char *core_path = "/home/umbra/Projects/Coding/spider-web/src-tauri/target/debug/spiderweb-core";
+    if (g_file_test(core_path, G_FILE_TEST_IS_EXECUTABLE)) {
+        char *core_argv[] = { (char *)core_path, NULL };
+        g_spawn_async(NULL, core_argv, NULL, G_SPAWN_DEFAULT, NULL, NULL, NULL, NULL);
+    }
+
     GtkApplication *app = gtk_application_new(
         "dev.hyprland.spiderweb",
         G_APPLICATION_DEFAULT_FLAGS

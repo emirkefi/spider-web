@@ -9,14 +9,19 @@ import {
   Sparkles,
   UserCheck,
 } from 'lucide-react';
-import { Project, Task, TaskStatus } from '../types';
+import { Group, Project, Role, Task, TaskStatus, User } from '../types';
 import { getDueTimeMeta, PRIORITY_CONFIG, STATUS_CONFIG } from '../utils';
+import { UserAvatar } from './UserAvatar';
 
 interface FocusListViewProps {
   mode: 'up_next' | 'my_tasks';
   tasks: Task[];
   projects: Project[];
   isDark: boolean;
+  users?: User[];
+  groups?: Group[];
+  roles?: Role[];
+  currentUserId?: string;
   onSelectTask: (task: Task) => void;
   onMoveStatus: (taskId: string, newStatus: TaskStatus) => void;
   onToggleUpNext: (taskId: string) => void;
@@ -35,15 +40,30 @@ export const FocusListView: React.FC<FocusListViewProps> = ({
   tasks,
   projects,
   isDark,
+  users = [],
+  groups = [],
+  roles = [],
+  currentUserId,
   onSelectTask,
   onMoveStatus,
   onToggleUpNext,
   onToggleSubtask,
 }) => {
   const projectMap = new Map(projects.map((p) => [p.id, p]));
+  const currentUser = users.find((u) => u.id === currentUserId);
+  const userGroupIds = currentUser ? currentUser.groupIds : [];
 
   const filteredTasks = tasks
-    .filter((t) => (mode === 'up_next' ? t.upNext : t.assignedToMe))
+    .filter((t) => {
+      if (mode === 'up_next') return t.upNext;
+      if (t.assigneeId) {
+        return t.assigneeId === currentUserId;
+      }
+      if (t.assigneeGroupId) {
+        return userGroupIds.includes(t.assigneeGroupId);
+      }
+      return t.assignedToMe;
+    })
     .sort((a, b) => {
       if (a.status === 'done' && b.status !== 'done') return 1;
       if (a.status !== 'done' && b.status === 'done') return -1;
@@ -165,6 +185,25 @@ export const FocusListView: React.FC<FocusListViewProps> = ({
                         {task.branchName}
                       </span>
                     )}
+                    {(() => {
+                      const assigneeUser = users.find((u) => u.id === task.assigneeId);
+                      const assigneeGroup = groups.find((g) => g.id === task.assigneeGroupId);
+                      if (!assigneeUser && !assigneeGroup) return null;
+                      return (
+                        <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 text-[10px]">
+                          <UserAvatar
+                            user={assigneeUser}
+                            group={assigneeGroup}
+                            roles={roles}
+                            size={16}
+                            showBadge={true}
+                          />
+                          <span className="font-medium opacity-80">
+                            {assigneeUser ? assigneeUser.name : assigneeGroup?.name}
+                          </span>
+                        </span>
+                      );
+                    })()}
                   </div>
 
                   <h3

@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="./public/hero-banner.svg" alt="SpiderWeb — Native Wayland & Hyprland Kanban" width="100%" />
+<img src="./public/hero-banner.png" alt="SpiderWeb — Native Wayland & Hyprland Kanban" width="100%" />
 
 <br />
 
@@ -14,6 +14,19 @@
   <strong>Fast, native GTK4/Wayland Kanban &amp; Code Review desktop app for Hyprland Linux.</strong>
 </p>
 
+<br />
+
+<img src="./public/screenshot-board.png" alt="SpiderWeb Kanban board in dark mode with To Do, In Progress, In Review and Done columns" width="100%" />
+
+</div>
+
+---
+
+## Screenshots
+
+<div align="center">
+  <img src="./public/screenshot-charts.png" alt="Progress and Charts view with completion ring, project progress and due time radar" width="49%" />
+  <img src="./public/screenshot-light.png" alt="Kanban board in light mode" width="49%" />
 </div>
 
 ---

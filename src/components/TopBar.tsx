@@ -10,9 +10,12 @@ import {
   Keyboard,
   Trash2,
   Bell,
+  Radio,
 } from 'lucide-react';
-import { ActiveView, Project, Task, TaskPriority } from '../types';
+import { ActiveView, Project, Role, Task, TaskPriority, User } from '../types';
 import { getDueTimeMeta } from '../utils';
+import { UserAvatar } from './UserAvatar';
+import { getUserRole } from '../rbac/rbacUtils';
 
 interface TopBarProps {
   isDark: boolean;
@@ -31,6 +34,12 @@ interface TopBarProps {
   onOpenKeybindsModal: () => void;
   unreadNotificationsCount?: number;
   onOpenNotifications?: () => void;
+  currentUser?: User;
+  roles?: Role[];
+  onOpenTeamModal?: () => void;
+  onOpenP2PModal?: () => void;
+  p2pOnline?: boolean;
+  p2pPeerCount?: number;
 }
 
 export const TopBar: React.FC<TopBarProps> = ({
@@ -49,8 +58,15 @@ export const TopBar: React.FC<TopBarProps> = ({
   onOpenKeybindsModal,
   unreadNotificationsCount = 0,
   onOpenNotifications,
+  currentUser,
+  roles = [],
+  onOpenTeamModal,
+  onOpenP2PModal,
+  p2pOnline = false,
+  p2pPeerCount = 0,
 }) => {
   const searchInputRef = useRef<HTMLInputElement>(null);
+  const currentUserRole = getUserRole(currentUser, roles);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -229,6 +245,33 @@ export const TopBar: React.FC<TopBarProps> = ({
           ))}
         </div>
 
+        {/* iroh QUIC P2P Sync Status Button */}
+        {onOpenP2PModal && (
+          <button
+            onClick={onOpenP2PModal}
+            title="iroh P2P Connectivity & CRDT Sync (Alt+S)"
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-medium transition-all active:scale-95 cursor-pointer ${
+              p2pOnline
+                ? isDark
+                  ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300 hover:bg-emerald-500/20'
+                  : 'bg-emerald-500/10 border-emerald-500/30 text-emerald-700 hover:bg-emerald-500/20'
+                : isDark
+                ? 'bg-white/[0.07] border-white/10 text-zinc-300 hover:bg-white/12'
+                : 'bg-black/[0.05] border-black/10 text-zinc-700 hover:bg-black/10'
+            }`}
+          >
+            <span
+              className={`w-2 h-2 rounded-full ${
+                p2pOnline ? 'bg-emerald-400 animate-pulse' : 'bg-zinc-500'
+              }`}
+            />
+            <Radio size={13} className={p2pOnline ? 'text-emerald-400' : 'opacity-65'} />
+            <span className="hidden md:inline font-mono text-[11px]">
+              {p2pOnline ? `iroh (${p2pPeerCount})` : 'P2P'}
+            </span>
+          </button>
+        )}
+
         {/* Keybinds Showcase Popup Button */}
         <button
           onClick={onOpenKeybindsModal}
@@ -245,6 +288,36 @@ export const TopBar: React.FC<TopBarProps> = ({
             ?
           </kbd>
         </button>
+
+        {/* Active User & Team Management Button */}
+        {currentUser && onOpenTeamModal && (
+          <button
+            onClick={onOpenTeamModal}
+            title={`Active User: ${currentUser.name} (${currentUserRole?.name || 'Member'}) — Click to manage Team & Roles`}
+            className={`flex items-center gap-2 pl-1.5 pr-2.5 py-1 rounded-xl border text-xs font-medium transition-all active:scale-95 cursor-pointer ${
+              isDark
+                ? 'bg-white/[0.07] border-white/10 text-zinc-200 hover:bg-white/12'
+                : 'bg-black/[0.05] border-black/10 text-zinc-700 hover:bg-black/10'
+            }`}
+          >
+            <UserAvatar user={currentUser} roles={roles} size={22} showBadge={true} />
+            <span className="hidden lg:inline font-semibold text-xs truncate max-w-24">
+              {currentUser.name}
+            </span>
+            {currentUserRole && (
+              <span
+                className="hidden xl:inline text-[9px] font-mono px-1.5 py-0.2 rounded border"
+                style={{
+                  backgroundColor: `${currentUserRole.color}15`,
+                  borderColor: `${currentUserRole.color}35`,
+                  color: currentUserRole.color,
+                }}
+              >
+                {currentUserRole.name}
+              </span>
+            )}
+          </button>
+        )}
 
         {/* Notifications Center Button */}
         {onOpenNotifications && (

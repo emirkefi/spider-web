@@ -29,9 +29,13 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "build:native": "tsc && vite build && node scripts/bundle-native.mjs && gcc -O2 native/main.c -o spiderweb $(pkg-config --cflags --libs gtk4 webkitgtk-6.0)",
+    "p2p:core": "cargo run --manifest-path src-tauri/Cargo.toml --bin spiderweb-core",
+    "p2p:cli": "cargo run --manifest-path src-tauri/Cargo.toml --bin spiderweb-peer-cli --",
+    "test:p2p": "cargo test --manifest-path src-tauri/Cargo.toml -- --nocapture",
     "preview": "vite preview"
   },
   "dependencies": {
+    "@tauri-apps/api": "^2.12.4",
     "lucide-react": "^0.468.0"
   },
   "devDependencies": {

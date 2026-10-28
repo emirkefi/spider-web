@@ -18,6 +18,8 @@ export interface Task {
   dueDate: string; // ISO string
   createdAt: string;
   assignedToMe: boolean;
+  assigneeId?: string;       // Assigned User ID
+  assigneeGroupId?: string;  // Assigned Team/Group ID
   upNext: boolean;
   tags: string[];
   prUrl?: string;       // Specifically useful for "In Review (for code)"
@@ -49,4 +51,42 @@ export interface AppNotification {
   read: boolean;
   taskId?: string;
   projectId?: string;
+}
+
+export type PermissionCategory = 'tasks' | 'projects' | 'team' | 'system';
+
+export interface Permission {
+  id: string;
+  name: string;
+  description: string;
+  category: PermissionCategory;
+}
+
+export interface Role {
+  id: string;
+  name: string;
+  description: string;
+  color: string;
+  permissions: string[];
+  isSystem?: boolean;
+}
+
+export interface Group {
+  id: string;
+  name: string;
+  description: string;
+  color: string;
+  roleId?: string;
+  memberIds: string[];
+  createdAt: string;
+}
+
+export interface User {
+  id: string;
+  name: string;
+  email: string;
+  roleId: string;
+  groupIds: string[];
+  directPermissions?: string[];
+  createdAt: string;
 }

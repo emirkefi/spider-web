@@ -11,13 +11,17 @@ import {
   CheckCircle2,
   AlertTriangle,
 } from 'lucide-react';
-import { Project, Task, TaskStatus } from '../types';
+import { Group, Project, Role, Task, TaskStatus, User } from '../types';
 import { getDueTimeMeta, PRIORITY_CONFIG, STATUS_CONFIG } from '../utils';
+import { UserAvatar } from './UserAvatar';
 
 interface TaskCardProps {
   task: Task;
   project?: Project;
   isDark: boolean;
+  users?: User[];
+  groups?: Group[];
+  roles?: Role[];
   onSelectTask: (task: Task) => void;
   onMoveStatus: (taskId: string, newStatus: TaskStatus) => void;
   onToggleUpNext: (taskId: string) => void;
@@ -32,6 +36,9 @@ export const TaskCard: React.FC<TaskCardProps> = ({
   task,
   project,
   isDark,
+  users = [],
+  groups = [],
+  roles = [],
   onSelectTask,
   onMoveStatus,
   onToggleUpNext,
@@ -44,6 +51,9 @@ export const TaskCard: React.FC<TaskCardProps> = ({
   const currentIdx = STATUS_ORDER.indexOf(task.status);
   const prevStatus = currentIdx > 0 ? STATUS_ORDER[currentIdx - 1] : null;
   const nextStatus = currentIdx < STATUS_ORDER.length - 1 ? STATUS_ORDER[currentIdx + 1] : null;
+
+  const assigneeUser = users.find((u) => u.id === task.assigneeId);
+  const assigneeGroup = groups.find((g) => g.id === task.assigneeGroupId);
 
   const completedSubtasks = task.subtasks.filter((s) => s.completed).length;
 
@@ -235,7 +245,22 @@ export const TaskCard: React.FC<TaskCardProps> = ({
             <span>{dueMeta.label}</span>
           </span>
 
-          {task.assignedToMe && (
+          {(assigneeUser || assigneeGroup) && (
+            <div className="flex items-center gap-1.5">
+              <UserAvatar
+                user={assigneeUser}
+                group={assigneeGroup}
+                roles={roles}
+                size={18}
+                showBadge={true}
+              />
+              <span className="text-[10px] font-medium opacity-75 truncate max-w-20">
+                {assigneeUser ? assigneeUser.name.split(' ')[0] : assigneeGroup?.name}
+              </span>
+            </div>
+          )}
+
+          {task.assignedToMe && !assigneeUser && (
             <span
               title="Assigned to Me"
               className={`text-[10px] px-1.5 py-0.5 rounded-md font-medium ${

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Plus, GitPullRequest, Clock, Sparkles } from 'lucide-react';
-import { Project, Task, TaskStatus } from '../types';
+import { Group, Project, Role, Task, TaskStatus, User } from '../types';
 import { STATUS_CONFIG } from '../utils';
 import { TaskCard } from './TaskCard';
 
@@ -8,6 +8,9 @@ interface KanbanBoardProps {
   tasks: Task[];
   projects: Project[];
   isDark: boolean;
+  users?: User[];
+  groups?: Group[];
+  roles?: Role[];
   onSelectTask: (task: Task) => void;
   onMoveStatus: (taskId: string, newStatus: TaskStatus) => void;
   onToggleUpNext: (taskId: string) => void;
@@ -22,6 +25,9 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
   tasks,
   projects,
   isDark,
+  users = [],
+  groups = [],
+  roles = [],
   onSelectTask,
   onMoveStatus,
   onToggleUpNext,
@@ -161,6 +167,9 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
                     task={task}
                     project={projectMap.get(task.projectId)}
                     isDark={isDark}
+                    users={users}
+                    groups={groups}
+                    roles={roles}
                     onSelectTask={onSelectTask}
                     onMoveStatus={onMoveStatus}
                     onToggleUpNext={onToggleUpNext}
