@@ -2,55 +2,75 @@ name: Track Repository Clones & Traffic
 
 on:
   schedule:
-    - cron: '0 0 * * *' # Runs daily at midnight UTC
-  workflow_dispatch:    # Can also be triggered manually anytime from the Actions tab
+    - cron: '0 0 * * *'
+  workflow_dispatch:
 
 permissions:
   contents: write
 
+concurrency:
+  group: clone-badge
+  cancel-in-progress: false
+
 jobs:
   update-clone-badge:
-    name: Record Cumulative Git Clones
+    name: Record Lifetime Git Clones
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Fetch GitHub Clones API & Update Badge JSON
+      - name: Update lifetime clone total
         env:
           TRAFFIC_TOKEN: ${{ secrets.TRAFFIC_TOKEN }}
           REPO: ${{ github.repository }}
+          BASELINE: "0"   # clones from before this workflow started tracking (see notes)
         run: |
           set -euo pipefail
+
           if [ -z "$TRAFFIC_TOKEN" ]; then
-            echo "::error::TRAFFIC_TOKEN secret is missing. Add it in Settings > Secrets and variables > Actions."
+            echo "::error::TRAFFIC_TOKEN secret is missing."
             exit 1
           fi
-          RESPONSE=$(curl -sf -H "Authorization: Bearer $TRAFFIC_TOKEN" \
+
+          # 1. Fetch the last 14 days of per-day clone data
+          RESPONSE=$(curl -sf \
+            -H "Authorization: Bearer $TRAFFIC_TOKEN" \
             -H "Accept: application/vnd.github+json" \
             "https://api.github.com/repos/$REPO/traffic/clones")
-          COUNT=$(echo "$RESPONSE" | jq -r '.count')
-          UNIQUES=$(echo "$RESPONSE" | jq -r '.uniques')
-          echo "Clones: $COUNT, unique: $UNIQUES"
-          mkdir -p badge-out
-          cat > badge-out/clones.json <<EOF
-          {
-            "schemaVersion": 1,
-            "label": "GIT CLONES",
-            "message": "${COUNT} (${UNIQUES} unique)",
-            "color": "30D158"
-          }
-          EOF
 
-      - name: Publish clones.json to badges branch
-        run: |
+          # 2. Load saved history from the badges branch (empty on first run)
+          git fetch origin badges || true
+          if git show origin/badges:history.json > /tmp/history.json 2>/dev/null; then
+            echo "Loaded existing history"
+          else
+            echo '{}' > /tmp/history.json
+          fi
+
+          # 3. Merge: newest API values overwrite older values for the same day
+          echo "$RESPONSE" | jq --slurpfile old /tmp/history.json '
+            $old[0] + ((.clones // []) | map({(.timestamp): {count, uniques}}) | add // {})
+          ' > /tmp/merged.json
+
+          # 4. Sum everything
+          TOTAL=$(jq --argjson b "$BASELINE" '[.[].count] | add // 0 | . + $b' /tmp/merged.json)
+          echo "Lifetime clones: $TOTAL"
+
+          jq -n --arg m "$TOTAL" \
+            '{schemaVersion:1, label:"GIT CLONES", message:$m, color:"30D158"}' \
+            > /tmp/clones.json
+
+          # 5. Commit to the badges branch (no force-push, history is preserved)
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git checkout --orphan badges-temp
-          git rm -rf . >/dev/null 2>&1 || true
-          mv badge-out/clones.json ./clones.json
-          rm -rf badge-out
-          git add clones.json
-          git commit -m "chore: update git clones badge counter"
-          git branch -M badges
-          git push -f origin badges
+          if git ls-remote --exit-code --heads origin badges >/dev/null 2>&1; then
+            git checkout -B badges origin/badges
+          else
+            git checkout --orphan badges
+            git rm -rf . >/dev/null 2>&1 || true
+          fi
+          cp /tmp/clones.json clones.json
+          cp /tmp/merged.json history.json
+          git add clones.json history.json
+          git commit -m "chore: update lifetime clone count" || { echo "No changes"; exit 0; }
+          git push origin badges
