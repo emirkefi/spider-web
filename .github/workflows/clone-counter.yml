@@ -18,17 +18,20 @@ jobs:
 
       - name: Fetch GitHub Clones API & Update Badge JSON
         env:
-          TRAFFIC_TOKEN: ${{ secrets.TRAFFIC_TOKEN || secrets.GITHUB_TOKEN }}
+          TRAFFIC_TOKEN: ${{ secrets.TRAFFIC_TOKEN }}
           REPO: ${{ github.repository }}
         run: |
-          # Fetch 14-day clone traffic from GitHub API
-          RESPONSE=$(curl -s -H "Authorization: Bearer $TRAFFIC_TOKEN" \
+          set -euo pipefail
+          if [ -z "$TRAFFIC_TOKEN" ]; then
+            echo "::error::TRAFFIC_TOKEN secret is missing. Add it in Settings > Secrets and variables > Actions."
+            exit 1
+          fi
+          RESPONSE=$(curl -sf -H "Authorization: Bearer $TRAFFIC_TOKEN" \
             -H "Accept: application/vnd.github+json" \
-            "https://api.github.com/repos/$REPO/traffic/clones" || echo '{"count":0,"uniques":0}')
-
-          COUNT=$(echo "$RESPONSE" | jq -r '.count // 0')
-          UNIQUES=$(echo "$RESPONSE" | jq -r '.uniques // 0')
-
+            "https://api.github.com/repos/$REPO/traffic/clones")
+          COUNT=$(echo "$RESPONSE" | jq -r '.count')
+          UNIQUES=$(echo "$RESPONSE" | jq -r '.uniques')
+          echo "Clones: $COUNT, unique: $UNIQUES"
           mkdir -p badge-out
           cat > badge-out/clones.json <<EOF
           {
